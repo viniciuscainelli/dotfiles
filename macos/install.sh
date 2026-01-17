@@ -83,12 +83,30 @@ install_packages() {
     done
 }
 
+# Install cask applications (idempotent)
+install_casks() {
+    local casks=(
+        docker
+    )
+
+    for cask in "${casks[@]}"; do
+        if brew list --cask "$cask" &> /dev/null; then
+            log_success "$cask is already installed"
+        else
+            log_info "Installing $cask..."
+            brew install --cask "$cask"
+            log_success "$cask installed"
+        fi
+    done
+}
+
 main() {
     log_info "Starting macOS configuration..."
 
     install_xcode_cli
     install_homebrew
     install_packages
+    install_casks
 
     log_success "macOS configuration complete!"
 }
